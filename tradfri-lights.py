@@ -26,6 +26,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import sys
 import ConfigParser
 import argparse
@@ -49,11 +50,18 @@ def parse_args():
 def main():
     """ main function """
     args = parse_args()
-    conf = ConfigParser.ConfigParser()
-    conf.read('tradfri.cfg')
 
-    hubip = conf.get('tradfri', 'hubip')
-    securityid = conf.get('tradfri', 'securityid')
+    hubip = os.environ.get("GATEWAY_IP", None)
+    securityid = os.environ.get("GATEWAY_KEY", None)
+
+    if not hubip:
+        conf = ConfigParser.ConfigParser()
+        conf.read('tradfri.cfg')
+        hubip = conf.get('tradfri', 'hubip')
+    if not securityid:
+        conf = ConfigParser.ConfigParser()
+        conf.read('tradfri.cfg')
+        securityid = conf.get('tradfri', 'securityid')
 
     if args.action == 'power':
         if args.value == 'on' or args.value == 'off':
